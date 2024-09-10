@@ -1,34 +1,45 @@
 import React, { useEffect, useRef, useState } from "react";
-
+import "./Timer.css";
 export default function Timer() {
   const [time, setTime] = useState(0);
-  const [running, setRunning] = useState(true);
+  const [running, setRunning] = useState(false);
   const timer = useRef();
+
   useEffect(() => {
     if (running) {
       timer.current = setInterval(() => {
-        setTime((pre) => pre + 1);
+        setTime((prev) => prev + 1);
       }, 1000);
-      return () => clearInterval(timer.current);
+    } else {
+      clearInterval(timer.current);
     }
+    return () => clearInterval(timer.current);
   }, [running]);
 
   return (
     <div className="stopwatch">
       <p className="timer">{format(time)}</p>
       <div className="action">
-        <button onClick={() => setTime(0)}>Restart</button>
         <button
+          className="btn restart"
           onClick={() => {
-            if (running) clearInterval(timer.current);
+            setTime(0);
+            setRunning(false);
+          }}>
+          Restart
+        </button>
+        <button
+          className={`btn ${running ? "stop" : "start"}`}
+          onClick={() => {
             setRunning(!running);
           }}>
-          {running ? "Stop" : "Resume"}
+          {running ? "Stop" : time === 0 ? "Play" : "Resume"}
         </button>
       </div>
     </div>
   );
 }
+
 const format = (time) => {
   let hours = Math.floor((time / 60 / 60) % 24);
   let minutes = Math.floor((time / 60) % 60);
